@@ -1,0 +1,9 @@
+{
+  "realm": "pos",
+  "auth-server-url": "http://localhost:8080/",
+  "ssl-required": "external",
+  "resource": "pos_p",
+  "credentials": {
+    "secret": "W93DdPvkyEzvUsxCKPpxrZb9eoDnfPfo"
+  }
+}
