@@ -33,7 +33,7 @@ public class InvoiceModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private CustomerModel customer;
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
@@ -50,7 +50,7 @@ public class InvoiceModel {
     public InvoiceModel() {
     }
 
-    public InvoiceModel(String invoiceNumber, Date dateTime, BigDecimal totalAmount, BigDecimal taxAmount, BigDecimal discountAmount, String paymentMethod, CustomerModel customer, StoreModel store, Date createdAt, Date updatedAt) {
+    public InvoiceModel(String invoiceNumber, Date dateTime, BigDecimal totalAmount, BigDecimal taxAmount, BigDecimal discountAmount, String paymentMethod, Customer customer, StoreModel store, Date createdAt, Date updatedAt) {
         this.invoiceNumber = invoiceNumber;
         this.dateTime = dateTime;
         this.totalAmount = totalAmount;
@@ -121,11 +121,11 @@ public class InvoiceModel {
         this.paymentMethod = paymentMethod;
     }
 
-    public CustomerModel getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 
-    public void setCustomer(CustomerModel customer) {
+    public void setCustomer(Customer customer) {
         this.customer = customer;
     }
 

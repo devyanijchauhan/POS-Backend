@@ -1,0 +1,56 @@
+#spring.datasource.url= jdbc:postgresql://localhost:5432/Pos
+#spring.datasource.username= postgres
+#spring.datasource.password=dhaval123
+
+#spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation= true
+#spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.PostgreSQLDialect
+
+# Hibernate ddl auto (create, create-drop, validate, update)
+#spring.jpa.hibernate.ddl-auto= update
+#server.port=8081
+
+#spring.security.oauth2.client.registration.pos-demo.client-id=pos-demo
+#spring.security.oauth2.client.registration.pos-demo.client-secret=SERrWLt6NkwXmFJC93miUodHWc8yVKpe
+#spring.security.oauth2.client.registration.pos-demo.scope=openid, profile, roles
+#spring.security.oauth2.client.registration.pos-demo.authorization-grant-type=authorization_code
+#spring.security.oauth2.client.registration.pos-demo.redirect-uri=http://localhost:8081/login/oauth2/code/*
+#spring.security.oauth2.client.provider.pos-demo.issuer-uri=http://localhost:8080/realms/pos
+
+spring:
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: https://localhost:8080/auth/realms/pos
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Pos
+    username: postgres
+    password: dhaval123
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8081
+
+
+com:
+  c4-soft:
+    springaddons:
+      oidc:
+        ops:
+          - iss: http://localhost:8080/realms/pos
+            authorities:
+              - path: $.realm_access.roles
+              - path: $.ressource_access.pos-demo.roles
+            username-claim: preferred_username
+        resourceserver:
+          permit-all:
+            - /users/me
+            - /actuator/health/readiness
+            - /actuator/health/liveness
+
+logging:
+  level:
+    javax.net.ssl: DEBUG

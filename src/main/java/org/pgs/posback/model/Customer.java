@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "customer")
-public class CustomerModel {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +38,10 @@ public class CustomerModel {
 
     // Constructors
 
-    public CustomerModel() {
+    public Customer() {
     }
 
-    public CustomerModel(String name, String contactInformation, int loyaltyPoints, Date dateOfBirth, String email, String address, Date createdAt, Date updatedAt) {
+    public Customer(String name, String contactInformation, int loyaltyPoints, Date dateOfBirth, String email, String address, Date createdAt, Date updatedAt) {
         this.name = name;
         this.contactInformation = contactInformation;
         this.loyaltyPoints = loyaltyPoints;
