@@ -3,6 +3,7 @@ package org.pgs.posback.dto.Customer;
 import lombok.Data;
 
 import java.util.Date;
+
 @Data
 public class CustomerUpdateDTO {
 
@@ -10,7 +11,7 @@ public class CustomerUpdateDTO {
 
     private String name;
 
-    private Long contactNumber;
+    private int contactNumber;
 
     private int loyaltyPoints;
 

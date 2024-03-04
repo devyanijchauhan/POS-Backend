@@ -16,17 +16,17 @@ public interface CustomerMapper {
 
     Customer CUSTOMER_REQ_DTO_TO_CUSTOMER(CustomerRequestDTO customerRequestDTO);
 
-    @Mappings({
-            @Mapping(target = "id", source = "customer.id"),
-            @Mapping(target = "name", source = "customer.name"),
-            @Mapping(target = "contactInformation", source = "customer.contactInformation"),
-            @Mapping(target = "loyaltyPoints", source = "customer.loyaltyPoints"),
-             @Mapping(target = "dateOfBirth", dateFormat = "yourDateFormat", source = "customer.dateOfBirth"),
-            @Mapping(target = "email", source = "customer.email"),
-            @Mapping(target = "address", source = "customer.address"),
-            @Mapping(target = "createdAt", dateFormat = "yourDateFormat", source = "customer.createdAt"),
-            @Mapping(target = "updatedAt", dateFormat = "yourDateFormat", source = "customer.updatedAt")
-    })
+//    @Mappings({
+//            @Mapping(target = "id", source = "customer.id"),
+//            @Mapping(target = "name", source = "customer.name"),
+//            @Mapping(target = "contactNumber", source = "customer.contactNumber"),
+//            @Mapping(target = "loyaltyPoints", source = "customer.loyaltyPoints"),
+//             @Mapping(target = "dateOfBirth", dateFormat = "yourDateFormat", source = "customer.dateOfBirth"),
+//            @Mapping(target = "email", source = "customer.email"),
+//            @Mapping(target = "address", source = "customer.address"),
+//            @Mapping(target = "createdAt", dateFormat = "yourDateFormat", source = "customer.createdAt"),
+//            @Mapping(target = "updatedAt", dateFormat = "yourDateFormat", source = "customer.updatedAt")
+//    })
 
     CustomerResponseDTO CUSTOMER_TO_CUSTOMER_RES_DTO(Customer customer);
 

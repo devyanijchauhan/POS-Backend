@@ -1,7 +1,7 @@
-package org.pgs.posback.DTO.Invoice;
+package org.pgs.posback.dto.Invoice;
 
 import lombok.Data;
-import org.pgs.posback.model.CustomerModel;
+import org.pgs.posback.model.Customer;
 import org.pgs.posback.model.StoreModel;
 
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ public class InvoiceRequestDTO {
 
     private String paymentMethod;
 
-    private CustomerModel customer;
+    private Customer customer;
 
     private StoreModel store;
 

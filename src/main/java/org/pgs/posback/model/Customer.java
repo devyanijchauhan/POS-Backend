@@ -1,6 +1,11 @@
 package org.pgs.posback.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
@@ -47,7 +52,7 @@ public class Customer {
     public Customer() {
     }
 
-    public CustomerModel(String name, Long contactNumber, int loyaltyPoints, Date dateOfBirth, String email, String address, Boolean gender, Date createdAt, Date updatedAt) {
+    public Customer(String name, Long contactNumber, int loyaltyPoints, Date dateOfBirth, String email, String address, Boolean gender, Date createdAt, Date updatedAt) {
         this.name = name;
         this.contactNumber = (Long) getContactNumber();
         this.loyaltyPoints = loyaltyPoints;

@@ -2,16 +2,17 @@ package org.pgs.posback.dto.Customer;
 
 import lombok.Data;
 
-
 import java.util.Date;
+
 
 @Data
 public class CustomerRequestDTO {
 
+    private Long id;
 
     private String name;
 
-    private Long contactNumber;
+    private int contactNumber;
 
     private int loyaltyPoints;
 
@@ -24,4 +25,5 @@ public class CustomerRequestDTO {
     private Date createdAt;
 
     private Date updatedAt;
+
 }
