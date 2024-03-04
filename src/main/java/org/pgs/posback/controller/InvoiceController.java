@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,7 @@ public class InvoiceController {
             InvoiceModel updatedInvoice = invoiceData.get();
             updatedInvoice.setInvoiceNumber(invoiceModel.getInvoiceNumber());
             updatedInvoice.setDateTime(invoiceModel.getDateTime());
+            updatedInvoice.setInvoicePrice(invoiceModel.getInvoicePrice());
             updatedInvoice.setTotalAmount(invoiceModel.getTotalAmount());
             updatedInvoice.setTaxAmount(invoiceModel.getTaxAmount());
             updatedInvoice.setDiscountAmount(invoiceModel.getDiscountAmount());
@@ -59,6 +61,8 @@ public class InvoiceController {
             updatedInvoice.setCustomer(invoiceModel.getCustomer());
             updatedInvoice.setStore(invoiceModel.getStore());
             updatedInvoice.setUpdatedAt(new Date());
+
+
             return new ResponseEntity<>(invoiceRepository.save(updatedInvoice), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -74,4 +78,19 @@ public class InvoiceController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // Method to calculate invoice price
+    private void calculateInvoicePrice(InvoiceModel invoiceModel) {
+        // Calculate invoice price logic based on totalAmount, taxAmount, and discountAmount
+        BigDecimal totalAmount = invoiceModel.getTotalAmount();
+        BigDecimal taxAmount = invoiceModel.getTaxAmount();
+        BigDecimal discountAmount = invoiceModel.getDiscountAmount();
+
+        // Calculate invoice price = totalAmount + taxAmount - discountAmount
+        BigDecimal invoicePrice = totalAmount.add(taxAmount).subtract(discountAmount);
+
+        // Set calculated invoice price
+        invoiceModel.setInvoicePrice(invoicePrice);
+    }
+
 }

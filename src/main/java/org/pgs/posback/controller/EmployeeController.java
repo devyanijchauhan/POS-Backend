@@ -4,7 +4,9 @@ import org.pgs.posback.model.EmployeeModel;
 import org.pgs.posback.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -22,12 +24,15 @@ public class EmployeeController {
         this.employeeRepository=employeeRepository;
     }
 
-    @GetMapping("/all")
+    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('NICE')")
     public List<EmployeeModel> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    @GetMapping("/{Id}")
+
+    @GetMapping(path ="by-id/{Id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('user')")
     public ResponseEntity<EmployeeModel> getEmployeeById(@PathVariable Long Id) {
         Optional<EmployeeModel> employeeData = employeeRepository.findById(Id);
         return employeeData.map(employeeModel -> new ResponseEntity<>(employeeModel, HttpStatus.OK))
@@ -54,7 +59,7 @@ public class EmployeeController {
             EmployeeModel updatedEmployee = employeeData.get();
             updatedEmployee.setName(employeeModel.getName());
             updatedEmployee.setRole(employeeModel.getRole());
-            updatedEmployee.setContactInformation(employeeModel.getContactInformation());
+            updatedEmployee.setContactNumber(employeeModel.getContactNumber());
             updatedEmployee.setHireDate(employeeModel.getHireDate());
             updatedEmployee.setSalary(employeeModel.getSalary());
             updatedEmployee.setUpdatedAt(new Date());

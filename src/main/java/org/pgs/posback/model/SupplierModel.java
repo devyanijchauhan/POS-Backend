@@ -1,9 +1,14 @@
 package org.pgs.posback.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "supplier")
 public class SupplierModel {
 
@@ -15,8 +20,8 @@ public class SupplierModel {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "contact_information")
-    private String contactInformation;
+    @Column(name = "contact_number")
+    private Long contactNumber;
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -42,13 +47,9 @@ public class SupplierModel {
         this.name = name;
     }
 
-    public String getContactInformation() {
-        return contactInformation;
-    }
+    public Long getContactNumber() {return contactNumber;}
 
-    public void setContactInformation(String contactInformation) {
-        this.contactInformation = contactInformation;
-    }
+    public void setContactNumber(Long contactNumber) {this.contactNumber = contactNumber;}
 
     public Date getCreatedAt() {
         return createdAt;
@@ -65,4 +66,17 @@ public class SupplierModel {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
 }
