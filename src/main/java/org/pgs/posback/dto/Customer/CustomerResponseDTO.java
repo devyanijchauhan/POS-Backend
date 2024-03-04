@@ -9,7 +9,7 @@ public class CustomerResponseDTO {
 
     private String name;
 
-    private String contactInformation;
+    private Long contactNumber;
 
     private int loyaltyPoints;
 

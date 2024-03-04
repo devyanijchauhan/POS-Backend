@@ -2,12 +2,11 @@ package org.pgs.posback.dto.Customer;
 
 import lombok.Data;
 
-
 import java.util.Date;
-
 @Data
-public class CustomerRequestDTO {
+public class CustomerUpdateDTO {
 
+    private Long id;
 
     private String name;
 
@@ -24,4 +23,5 @@ public class CustomerRequestDTO {
     private Date createdAt;
 
     private Date updatedAt;
+
 }
