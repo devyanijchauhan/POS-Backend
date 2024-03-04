@@ -40,7 +40,7 @@ public class AccountController {
             return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        } 
+        }
     }
 
     @PutMapping("/{accountid}")

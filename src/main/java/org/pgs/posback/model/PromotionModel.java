@@ -1,9 +1,14 @@
 package org.pgs.posback.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "promotion")
 public class PromotionModel {
 
@@ -138,4 +143,17 @@ public class PromotionModel {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "customer")
 public class Customer {
 
@@ -15,12 +17,13 @@ public class Customer {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "contact_information")
-    private String contactInformation;
+    @Column(name = "contact_number")
+    private Long contactNumber;
 
     @Column(name = "loyalty_points")
     private int loyaltyPoints;
 
+    @JsonFormat(pattern = "dd-MM-yyyy") // Specify the custom date format
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
@@ -29,6 +32,9 @@ public class Customer {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "gender")
+    private Boolean gender; // Changed gender attribute to Boolean
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -41,13 +47,14 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String name, String contactInformation, int loyaltyPoints, Date dateOfBirth, String email, String address, Date createdAt, Date updatedAt) {
+    public CustomerModel(String name, Long contactNumber, int loyaltyPoints, Date dateOfBirth, String email, String address, Boolean gender, Date createdAt, Date updatedAt) {
         this.name = name;
-        this.contactInformation = contactInformation;
+        this.contactNumber = (Long) getContactNumber();
         this.loyaltyPoints = loyaltyPoints;
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.address = address;
+        this.gender = gender;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -70,13 +77,11 @@ public class Customer {
         this.name = name;
     }
 
-    public String getContactInformation() {
-        return contactInformation;
+    public Long getContactNumber() {
+        return contactNumber;
     }
 
-    public void setContactInformation(String contactInformation) {
-        this.contactInformation = contactInformation;
-    }
+    public void setContactNumber(Long contactNumber) {this.contactNumber = contactNumber;}
 
     public int getLoyaltyPoints() {
         return loyaltyPoints;
@@ -110,6 +115,10 @@ public class Customer {
         this.address = address;
     }
 
+    public Boolean getGender() {return gender;}
+
+    public void setGender(Boolean gender) {this.gender = gender;}
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -124,5 +133,22 @@ public class Customer {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
+    @JsonGetter("gender")
+    public String getGenderAsString() {
+        return gender != null && gender ? "Male" : "Female";
     }
 }

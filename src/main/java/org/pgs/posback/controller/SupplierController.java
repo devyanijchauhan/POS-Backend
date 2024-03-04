@@ -50,7 +50,7 @@ public class SupplierController {
         if (supplierData.isPresent()) {
             SupplierModel updatedSupplier = supplierData.get();
             updatedSupplier.setName(supplierModel.getName());
-            updatedSupplier.setContactInformation(supplierModel.getContactInformation());
+            updatedSupplier.setContactNumber(supplierModel.getContactNumber());
             updatedSupplier.setCreatedAt(supplierModel.getCreatedAt());
             updatedSupplier.setUpdatedAt(supplierModel.getUpdatedAt());
             return new ResponseEntity<>(supplierRepository.save(updatedSupplier), HttpStatus.OK);

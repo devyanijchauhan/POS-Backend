@@ -55,6 +55,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
@@ -85,7 +86,6 @@
 			<version>7.1.14</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
