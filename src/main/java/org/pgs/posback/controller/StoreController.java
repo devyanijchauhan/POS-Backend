@@ -40,7 +40,7 @@ public class StoreController {
                 .map(existingStore -> {
                     existingStore.setName(storeModel.getName());
                     existingStore.setAddress(storeModel.getAddress());
-                    existingStore.setContactInformation(storeModel.getContactInformation());
+                    existingStore.setContactNumber(storeModel.getContactNumber());
                     existingStore.setOpeningHours(storeModel.getOpeningHours());
                     return storeRepository.save(existingStore);
                 })

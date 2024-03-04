@@ -1,9 +1,14 @@
 package org.pgs.posback.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "supplier_product")
 public class SupplierProductModel {
 
@@ -87,4 +92,17 @@ public class SupplierProductModel {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
 }

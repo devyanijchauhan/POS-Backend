@@ -50,11 +50,12 @@ public class CustomerController {
         if (customerData.isPresent()) {
             CustomerModel updatedCustomer = customerData.get();
             updatedCustomer.setName(customerModel.getName());
-            updatedCustomer.setContactInformation(customerModel.getContactInformation());
+            customerModel.setContactNumber(updatedCustomer.getContactNumber());
             updatedCustomer.setLoyaltyPoints(customerModel.getLoyaltyPoints());
             updatedCustomer.setDateOfBirth(customerModel.getDateOfBirth());
             updatedCustomer.setEmail(customerModel.getEmail());
             updatedCustomer.setAddress(customerModel.getAddress());
+            updatedCustomer.setGender(customerModel.getGender()); // Set gender
             updatedCustomer.setCreatedAt(customerModel.getCreatedAt());
             updatedCustomer.setUpdatedAt(customerModel.getUpdatedAt());
             return new ResponseEntity<>(customerRepository.save(updatedCustomer), HttpStatus.OK);

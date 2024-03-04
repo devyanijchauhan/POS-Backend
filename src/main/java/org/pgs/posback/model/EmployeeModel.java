@@ -7,9 +7,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.*;
 import java.util.Date;
 
+@Entity
 @Getter
 @Setter
-@Entity
 @Table(name = "employee")
 public class EmployeeModel {
 
@@ -24,8 +24,8 @@ public class EmployeeModel {
     @Column(name = "role")
     private String role;
 
-    @Column(name = "contact_information")
-    private String contactInformation;
+    @Column(name = "contact_number")
+    private int contactNumber;
 
     @Column(name = "hire_date")
     private Date hireDate;
@@ -71,13 +71,11 @@ public class EmployeeModel {
         this.role = role;
     }
 
-    public String getContactInformation() {
-        return contactInformation;
+    public int getContactNumber() {
+        return contactNumber;
     }
 
-    public void setContactInformation(String contactInformation) {
-        this.contactInformation = contactInformation;
-    }
+    public void setContactNumber(int contactNumber) {this.contactNumber = contactNumber;}
 
     public Date getHireDate() {
         return hireDate;
@@ -118,4 +116,17 @@ public class EmployeeModel {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
 }

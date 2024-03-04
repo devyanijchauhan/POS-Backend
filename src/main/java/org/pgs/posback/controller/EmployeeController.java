@@ -54,7 +54,7 @@ public class EmployeeController {
             EmployeeModel updatedEmployee = employeeData.get();
             updatedEmployee.setName(employeeModel.getName());
             updatedEmployee.setRole(employeeModel.getRole());
-            updatedEmployee.setContactInformation(employeeModel.getContactInformation());
+            updatedEmployee.setContactNumber(employeeModel.getContactNumber());
             updatedEmployee.setHireDate(employeeModel.getHireDate());
             updatedEmployee.setSalary(employeeModel.getSalary());
             updatedEmployee.setUpdatedAt(new Date());

@@ -1,10 +1,15 @@
 package org.pgs.posback.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "invoice")
 public class InvoiceModel {
 
@@ -18,6 +23,9 @@ public class InvoiceModel {
 
     @Column(name = "date_time")
     private Date dateTime;
+
+    @Column(name = "invoice_price")
+    private BigDecimal invoicePrice;
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
@@ -50,9 +58,10 @@ public class InvoiceModel {
     public InvoiceModel() {
     }
 
-    public InvoiceModel(String invoiceNumber, Date dateTime, BigDecimal totalAmount, BigDecimal taxAmount, BigDecimal discountAmount, String paymentMethod, CustomerModel customer, StoreModel store, Date createdAt, Date updatedAt) {
+    public InvoiceModel(String invoiceNumber, Date dateTime, BigDecimal invoicePrice, BigDecimal totalAmount, BigDecimal taxAmount, BigDecimal discountAmount, String paymentMethod, CustomerModel customer, StoreModel store, Date createdAt, Date updatedAt) {
         this.invoiceNumber = invoiceNumber;
         this.dateTime = dateTime;
+        this.invoicePrice = invoicePrice;
         this.totalAmount = totalAmount;
         this.taxAmount = taxAmount;
         this.discountAmount = discountAmount;
@@ -87,6 +96,14 @@ public class InvoiceModel {
 
     public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public BigDecimal getInvoicePrice() {
+        return invoicePrice;
+    }
+
+    public void setInvoicePrice(BigDecimal invoicePrice) {
+        this.invoicePrice = invoicePrice;
     }
 
     public BigDecimal getTotalAmount() {
@@ -152,4 +169,17 @@ public class InvoiceModel {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
 }

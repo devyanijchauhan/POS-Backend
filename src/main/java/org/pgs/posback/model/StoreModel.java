@@ -1,9 +1,14 @@
 package org.pgs.posback.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "store")
 public class StoreModel {
 
@@ -18,8 +23,8 @@ public class StoreModel {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "contact_information")
-    private String contactInformation;
+    @Column(name = "contact_number")
+    private Long contactNumber;
 
     @Column(name = "opening_hours")
     private String openingHours;
@@ -56,12 +61,11 @@ public class StoreModel {
         this.address = address;
     }
 
-    public String getContactInformation() {
-        return contactInformation;
+    public Long getContactNumber() {
+        return contactNumber;
     }
 
-    public void setContactInformation(String contactInformation) {
-        this.contactInformation = contactInformation;
+    public void setContactNumber(Long contactNumber) {this.contactNumber = contactNumber;
     }
 
     public String getOpeningHours() {
@@ -87,4 +91,17 @@ public class StoreModel {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    // Automatically set createdAt and updatedAt before persisting or updating the entity
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
+    }
+
 }
