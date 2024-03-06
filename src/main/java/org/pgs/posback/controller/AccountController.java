@@ -1,72 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.AccountModel;
-import org.pgs.posback.repository.AccountRepository;
+import org.pgs.posback.DTO.Account.AccountRequestDTO;
+import org.pgs.posback.DTO.Account.AccountResponseDTO;
+import org.pgs.posback.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
 
-    private AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Autowired
-    public AccountController(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
     }
 
     @GetMapping("/all")
-    public List<AccountModel> getAllAccounts() {
-        return accountRepository.findAll();
+    public ResponseEntity<List<AccountResponseDTO>> getAllAccounts() {
+        List<AccountResponseDTO> accounts = accountService.getAllAccounts();
+        return ResponseEntity.ok(accounts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountModel> getAccountById(@PathVariable("id") Long id) {
-        Optional<AccountModel> accountData = accountRepository.findById(id);
-        return accountData.map(accountModel -> new ResponseEntity<>(accountModel, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<AccountResponseDTO> getAccountById(@PathVariable Long id) {
+        AccountResponseDTO account = accountService.getAccountById(id);
+        return account != null ? ResponseEntity.ok(account) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<AccountModel> createAccount(@RequestBody AccountModel accountModel) {
-        try {
-            AccountModel createdAccount = accountRepository.save(accountModel);
-            return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<AccountResponseDTO> createAccount(@RequestBody AccountRequestDTO accountRequestDTO) {
+        AccountResponseDTO createdAccount = accountService.createAccount(accountRequestDTO);
+        return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{accountid}")
-    public ResponseEntity<AccountModel> updateAccount(@PathVariable("accountid") Long accountid, @RequestBody AccountModel accountModel) {
-        Optional<AccountModel> accountData = accountRepository.findById(accountid);
-
-        if (accountData.isPresent()) {
-            AccountModel updatedAccount = accountData.get();
-            updatedAccount.setUsername(accountModel.getUsername());
-            updatedAccount.setPassword(accountModel.getPassword());
-            updatedAccount.setRole(accountModel.getRole());
-            updatedAccount.setCreatedAt(accountModel.getCreatedAt());
-            updatedAccount.setUpdatedAt(accountModel.getUpdatedAt());
-            return new ResponseEntity<>(accountRepository.save(updatedAccount), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{accountId}")
+    public ResponseEntity<AccountResponseDTO> updateAccount(@PathVariable Long accountId, @RequestBody AccountRequestDTO accountRequestDTO) {
+        AccountResponseDTO updatedAccount = accountService.updateAccount(accountId, accountRequestDTO);
+        return updatedAccount != null ? ResponseEntity.ok(updatedAccount) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{ida}")
-    public ResponseEntity<HttpStatus> deleteAccount(@PathVariable("ida") Long ida) {
-        try {
-            accountRepository.deleteById(ida);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping("/{Ids}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long Ids) {
+        accountService.deleteAccount(Ids);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,76 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.ManagerModel;
-import org.pgs.posback.repository.EmployeeRepository;
-import org.pgs.posback.repository.ManagerRepository;
+import org.pgs.posback.DTO.Manager.ManagerRequestDTO;
+import org.pgs.posback.DTO.Manager.ManagerResponseDTO;
+import org.pgs.posback.service.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/managers")
 public class ManagerController {
-    private ManagerRepository managerRepository;
+
+    private final ManagerService managerService;
 
     @Autowired
-    public ManagerController(ManagerRepository managerRepository){
-        this.managerRepository=managerRepository;
+    public ManagerController(ManagerService managerService) {
+        this.managerService = managerService;
     }
 
     @GetMapping("/all")
-    public List<ManagerModel> getAllManagers() {
-        return managerRepository.findAll();
+    public ResponseEntity<List<ManagerResponseDTO>> getAllManagers() {
+        List<ManagerResponseDTO> managers = managerService.getAllManagers();
+        return ResponseEntity.ok(managers);
     }
 
-    @GetMapping("/{Id}")
-    public ResponseEntity<ManagerModel> getManagerById(@PathVariable Long Id) {
-        Optional<ManagerModel> managerData = managerRepository.findById(Id);
-        return managerData.map(managerModel -> new ResponseEntity<>(managerModel, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/{id}")
+    public ResponseEntity<ManagerResponseDTO> getManagerById(@PathVariable Long id) {
+        ManagerResponseDTO manager = managerService.getManagerById(id);
+        return manager != null ? ResponseEntity.ok(manager) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<ManagerModel> createManager(@RequestBody ManagerModel manager) {
-        try {
-            manager.setCreatedAt(new Date());
-            manager.setUpdatedAt(new Date());
-            ManagerModel createdManager = managerRepository.save(manager);
-            return new ResponseEntity<>(createdManager, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<ManagerResponseDTO> createManager(@RequestBody ManagerRequestDTO managerRequestDTO) {
+        ManagerResponseDTO createdManager = managerService.createManager(managerRequestDTO);
+        return new ResponseEntity<>(createdManager, HttpStatus.CREATED);
     }
 
     @PutMapping("/{managerId}")
-    public ResponseEntity<ManagerModel> updateManager(@PathVariable Long managerId, @RequestBody ManagerModel managerModel) {
-        Optional<ManagerModel> managerData = managerRepository.findById(managerId);
-
-        if (managerData.isPresent()) {
-            ManagerModel updatedManager = managerData.get();
-            updatedManager.setName(managerModel.getName());
-            updatedManager.setRole(managerModel.getRole());
-            updatedManager.setAccount(managerModel.getAccount());
-            updatedManager.setAdmin(managerModel.getAdmin());
-            updatedManager.setStore(managerModel.getStore());
-            updatedManager.setUpdatedAt(new Date());
-            return new ResponseEntity<>(managerRepository.save(updatedManager), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ManagerResponseDTO> updateManager(@PathVariable Long managerId, @RequestBody ManagerRequestDTO managerRequestDTO) {
+        ManagerResponseDTO updatedManager = managerService.updateManager(managerId, managerRequestDTO);
+        return updatedManager != null ? ResponseEntity.ok(updatedManager) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{Idm}")
-    public ResponseEntity<HttpStatus> deleteManager(@PathVariable Long Idm) {
-        try {
-            managerRepository.deleteById(Idm);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping("/{managerId}")
+    public ResponseEntity<Void> deleteManager(@PathVariable Long managerId) {
+        managerService.deleteManager(managerId);
+        return ResponseEntity.noContent().build();
     }
 }

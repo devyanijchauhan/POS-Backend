@@ -1,54 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.StoreModel;
-import org.pgs.posback.repository.StoreRepository;
+import org.pgs.posback.DTO.Store.StoreRequestDTO;
+import org.pgs.posback.DTO.Store.StoreResponseDTO;
+import org.pgs.posback.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/stores")
 public class StoreController {
 
-    private StoreRepository storeRepository;
+    private final StoreService storeService;
 
     @Autowired
-    public StoreController(StoreRepository storeRepository) {
-        this.storeRepository = storeRepository;
+    public StoreController(StoreService storeService) {
+        this.storeService = storeService;
     }
 
     @GetMapping("/all")
-    public List<StoreModel> getAllStores() {
-        return storeRepository.findAll();
+    public ResponseEntity<List<StoreResponseDTO>> getAllStores() {
+        List<StoreResponseDTO> stores = storeService.getAllStores();
+        return ResponseEntity.ok(stores);
     }
 
     @GetMapping("/{id}")
-    public Optional<StoreModel> getStoreById(@PathVariable Long id) {
-        return storeRepository.findById(id);
+    public ResponseEntity<StoreResponseDTO> getStoreById(@PathVariable Long id) {
+        StoreResponseDTO store = storeService.getStoreById(id);
+        return store != null ? ResponseEntity.ok(store) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public StoreModel createStore(@RequestBody StoreModel storeModel) {
-        return storeRepository.save(storeModel);
+    public ResponseEntity<StoreResponseDTO> createStore(@RequestBody StoreRequestDTO storeRequestDTO) {
+        StoreResponseDTO createdStore = storeService.createStore(storeRequestDTO);
+        return new ResponseEntity<>(createdStore, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{storeid}")
-    public StoreModel updateStore(@PathVariable Long storeid, @RequestBody StoreModel storeModel) {
-        return storeRepository.findById(storeid)
-                .map(existingStore -> {
-                    existingStore.setName(storeModel.getName());
-                    existingStore.setAddress(storeModel.getAddress());
-                    existingStore.setContactNumber(storeModel.getContactNumber());
-                    existingStore.setOpeningHours(storeModel.getOpeningHours());
-                    return storeRepository.save(existingStore);
-                })
-                .orElse(null);
+    @PutMapping("/{storeId}")
+    public ResponseEntity<StoreResponseDTO> updateStore(@PathVariable Long storeId, @RequestBody StoreRequestDTO storeRequestDTO) {
+        StoreResponseDTO updatedStore = storeService.updateStore(storeId, storeRequestDTO);
+        return updatedStore != null ? ResponseEntity.ok(updatedStore) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{ids}")
-    public void deleteStore(@PathVariable Long ids) {
-        storeRepository.deleteById(ids);
+    @DeleteMapping("/{Ids}")
+    public ResponseEntity<Void> deleteStore(@PathVariable Long Ids) {
+        storeService.deleteStore(Ids);
+        return ResponseEntity.noContent().build();
     }
 }

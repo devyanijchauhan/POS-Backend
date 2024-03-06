@@ -1,81 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.EmployeeModel;
-import org.pgs.posback.repository.EmployeeRepository;
+import org.pgs.posback.DTO.Employee.EmployeeRequestDTO;
+import org.pgs.posback.DTO.Employee.EmployeeResponseDTO;
+import org.pgs.posback.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
 
-    private EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
     @Autowired
-    public EmployeeController(EmployeeRepository employeeRepository){
-        this.employeeRepository=employeeRepository;
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
-    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('NICE')")
-    public List<EmployeeModel> getAllEmployees() {
-        return employeeRepository.findAll();
+    @GetMapping("/all")
+    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
+        List<EmployeeResponseDTO> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 
-
-    @GetMapping(path ="by-id/{Id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('user')")
-    public ResponseEntity<EmployeeModel> getEmployeeById(@PathVariable Long Id) {
-        Optional<EmployeeModel> employeeData = employeeRepository.findById(Id);
-        return employeeData.map(employeeModel -> new ResponseEntity<>(employeeModel, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id) {
+        EmployeeResponseDTO employee = employeeService.getEmployeeById(id);
+        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeModel> createEmployee(@RequestBody EmployeeModel employee) {
-        try {
-            employee.setCreatedAt(new Date());
-            employee.setUpdatedAt(new Date());
-            EmployeeModel createdEmployee = employeeRepository.save(employee);
-            return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        EmployeeResponseDTO createdEmployee = employeeService.createEmployee(employeeRequestDTO);
+        return new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
     }
 
     @PutMapping("/{employeeId}")
-    public ResponseEntity<EmployeeModel> updateEmployee(@PathVariable Long employeeId, @RequestBody EmployeeModel employeeModel) {
-        Optional<EmployeeModel> employeeData = employeeRepository.findById(employeeId);
-
-        if (employeeData.isPresent()) {
-            EmployeeModel updatedEmployee = employeeData.get();
-            updatedEmployee.setName(employeeModel.getName());
-            updatedEmployee.setRole(employeeModel.getRole());
-            updatedEmployee.setContactNumber(employeeModel.getContactNumber());
-            updatedEmployee.setHireDate(employeeModel.getHireDate());
-            updatedEmployee.setSalary(employeeModel.getSalary());
-            updatedEmployee.setUpdatedAt(new Date());
-            return new ResponseEntity<>(employeeRepository.save(updatedEmployee), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long employeeId, @RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        EmployeeResponseDTO updatedEmployee = employeeService.updateEmployee(employeeId, employeeRequestDTO);
+        return updatedEmployee != null ? ResponseEntity.ok(updatedEmployee) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{Ide}")
-    public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable Long Ide) {
-        try {
-            employeeRepository.deleteById(Ide);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping("/{employeeId}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
+        employeeService.deleteEmployee(employeeId);
+        return ResponseEntity.noContent().build();
     }
 }

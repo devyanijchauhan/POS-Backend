@@ -13,7 +13,7 @@ public class StoreResponseDTO {
 
     private String address;
 
-    private String contactInformation;
+    private Long contactNumber;
 
     private String openingHours;
 
