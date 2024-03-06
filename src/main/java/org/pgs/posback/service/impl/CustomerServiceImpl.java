@@ -1,13 +1,15 @@
 package org.pgs.posback.service.impl;
 
 import jakarta.transaction.Transactional;
-import org.pgs.posback.dto.Customer.CustomerRequestDTO;
-import org.pgs.posback.dto.Customer.CustomerResponseDTO;
+import org.pgs.posback.DTO.Customer.CustomerRequestDTO;
+import org.pgs.posback.DTO.Customer.CustomerResponseDTO;
 import org.pgs.posback.mapper.CustomerMapper;
 import org.pgs.posback.model.Customer;
 import org.pgs.posback.repository.CustomerRepository;
 import org.pgs.posback.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +58,56 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponseDTO updateCustomer(CustomerRequestDTO customerRequestDTO, Long id) {
-        return null;
+
+
+        Optional<Customer> updatedCustomer = customerRepository.findById(id);
+
+        if (updatedCustomer.isPresent()) {
+            if(customerRequestDTO.getName()!= null) {
+                updatedCustomer.get().setName(customerRequestDTO.getName());
+            }
+
+            if (customerRequestDTO.getContactNumber() != null) {
+                updatedCustomer.get().setContactNumber(customerRequestDTO.getContactNumber());
+            }
+
+            if (customerRequestDTO.getDateOfBirth() != null) {
+                updatedCustomer.get().setDateOfBirth(customerRequestDTO.getDateOfBirth());
+            }
+            if (customerRequestDTO.getEmail() != null) {
+                updatedCustomer.get().setEmail(customerRequestDTO.getEmail());
+            }
+            if (customerRequestDTO.getAddress() != null) {
+                updatedCustomer.get().setAddress(customerRequestDTO.getAddress());
+            }
+
+            if (customerRequestDTO.getGender() != null) {
+                updatedCustomer.get().setGender(customerRequestDTO.getGender());
+            }
+
+
+            if (customerRequestDTO.getCreatedAt() != null) {
+                updatedCustomer.get().setCreatedAt(customerRequestDTO.getCreatedAt());
+            }
+
+            if (customerRequestDTO.getUpdatedAt() != null) {
+                updatedCustomer.get().setUpdatedAt(customerRequestDTO.getCreatedAt());
+            }
+
+
+//            Customer updatedCustomer = customerData.get();
+//            updatedCustomer.setName(customerModel.getName());
+//            updatedCustomer.setContactNumber(customerModel.getContactNumber());
+//            updatedCustomer.setLoyaltyPoints(customerModel.getLoyaltyPoints());
+//            updatedCustomer.setDateOfBirth(customerModel.getDateOfBirth());
+//            updatedCustomer.setEmail(customerModel.getEmail());
+//            updatedCustomer.setAddress(customerModel.getAddress());
+//            updatedCustomer.setCreatedAt(customerModel.getCreatedAt());
+//            updatedCustomer.setUpdatedAt(customerModel.getUpdatedAt());
+            return CustomerMapper.INSTANCE.CUSTOMER_TO_CUSTOMER_RES_DTO(customerRepository.save(updatedCustomer.get()));
+        } else {
+            throw new RuntimeException("customer with id "+" is not exist");
+        }
     }
 
     @Override
@@ -70,3 +121,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 }
+
+
+

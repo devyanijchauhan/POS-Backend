@@ -1,7 +1,7 @@
 package org.pgs.posback.service;
 
-import org.pgs.posback.dto.Customer.CustomerRequestDTO;
-import org.pgs.posback.dto.Customer.CustomerResponseDTO;
+import org.pgs.posback.DTO.Customer.CustomerRequestDTO;
+import org.pgs.posback.DTO.Customer.CustomerResponseDTO;
 
 import java.util.List;
 

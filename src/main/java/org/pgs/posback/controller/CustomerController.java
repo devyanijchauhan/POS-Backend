@@ -1,7 +1,8 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.dto.Customer.CustomerRequestDTO;
-import org.pgs.posback.dto.Customer.CustomerResponseDTO;
+import org.pgs.posback.DTO.Customer.CustomerRequestDTO;
+import org.pgs.posback.DTO.Customer.CustomerResponseDTO;
+import org.pgs.posback.model.Customer;
 import org.pgs.posback.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,12 +12,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
 
+    @Autowired
     private CustomerService customerService;
 
     @Autowired
@@ -24,10 +27,10 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @GetMapping(path="/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('NICE')")
     public ResponseEntity<List<CustomerResponseDTO>> getAllCustomers() {
-        return new ResponseEntity<>(customerService.getAllCustomer(),HttpStatus.OK);
+        return new ResponseEntity<>(customerService.getAllCustomer(), HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -41,14 +44,24 @@ public class CustomerController {
 
     @GetMapping("/by-id/{id}")
     public ResponseEntity<CustomerResponseDTO> getCustomerById(@PathVariable Long id) {
-       try {
-           return new ResponseEntity<>(customerService.getById(id),HttpStatus.OK);
-       } catch (Exception e){
-           throw new RuntimeException(e);
-       }
+        try {
+            return new ResponseEntity<>(customerService.getById(id), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @DeleteMapping("delete/{id}")
+    @PutMapping("/{customerid}")
+    public ResponseEntity<CustomerResponseDTO> updateCustomer(@PathVariable Long customerid, @RequestBody CustomerRequestDTO customerRequestDTO) {
+        try {
+            return new ResponseEntity<>(customerService.updateCustomer(customerRequestDTO,customerid), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         try {
             customerService.deleteCustomer(id);
@@ -57,28 +70,5 @@ public class CustomerController {
             throw new RuntimeException(e);
         }
     }
-
-
-//
-//    @PutMapping("/{customerid}")
-//    public ResponseEntity<Customer> updateCustomer(@PathVariable Long customerid, @RequestBody Customer customerModel) {
-//        Optional<Customer> customerData = customerRepository.findById(customerid);
-//
-//        if (customerData.isPresent()) {
-//            Customer updatedCustomer = customerData.get();
-//            updatedCustomer.setName(customerModel.getName());
-//            updatedCustomer.setContactInformation(customerModel.getContactInformation());
-//            updatedCustomer.setLoyaltyPoints(customerModel.getLoyaltyPoints());
-//            updatedCustomer.setDateOfBirth(customerModel.getDateOfBirth());
-//            updatedCustomer.setEmail(customerModel.getEmail());
-//            updatedCustomer.setAddress(customerModel.getAddress());
-//            updatedCustomer.setCreatedAt(customerModel.getCreatedAt());
-//            updatedCustomer.setUpdatedAt(customerModel.getUpdatedAt());
-//            return new ResponseEntity<>(customerRepository.save(updatedCustomer), HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
-
-
 }
+

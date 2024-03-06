@@ -12,7 +12,7 @@ public class CustomerRequestDTO {
 
     private String name;
 
-    private int contactNumber;
+    private Long contactNumber;
 
     private int loyaltyPoints;
 
@@ -21,6 +21,8 @@ public class CustomerRequestDTO {
     private String email;
 
     private String address;
+
+    private Boolean gender;
 
     private Date createdAt;
 

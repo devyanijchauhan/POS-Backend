@@ -1,9 +1,14 @@
 package org.pgs.posback.controller;
 
+import org.pgs.posback.DTO.Admin.AdminRequestDTO;
+import org.pgs.posback.DTO.Admin.AdminResponseDTO;
 import org.pgs.posback.model.AdminModel;
 import org.pgs.posback.repository.AdminRepository;
 import org.pgs.posback.repository.EmployeeRepository;
+import org.pgs.posback.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -13,53 +18,40 @@ import java.util.List;
 @RequestMapping("/admins")
 public class AdminController {
 
-    private AdminRepository adminRepository;
+    private AdminService adminService;
 
     @Autowired
-    public AdminController(AdminRepository adminRepository){
-        this.adminRepository=adminRepository;
+    public AdminController(AdminService adminService){
+        this.adminService = adminService;
     }
 
     @GetMapping("/all")
-    public List<AdminModel> getAllAdmins() {
-        return adminRepository.findAll();
+    public ResponseEntity<List<AdminResponseDTO>> getAllAdmins() {
+        List<AdminResponseDTO> admins = adminService.getAllAdmins();
+        return ResponseEntity.ok(admins);
     }
 
     @GetMapping("/{Id}")
-    public AdminModel getAdminById(@PathVariable Long Id) {
-        return adminRepository.findById(Id).orElse(null);
+    public ResponseEntity<AdminResponseDTO> getAdminById(@PathVariable Long Id) {
+        AdminResponseDTO admin = adminService.getAdminById(Id);
+        return admin != null ? ResponseEntity.ok(admin) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public AdminModel createAdmin(@RequestBody AdminModel admin) {
-        admin.setCreatedAt(new Date());
-        admin.setUpdatedAt(new Date());
-        return adminRepository.save(admin);
+    public ResponseEntity<AdminResponseDTO> createAdmin(@RequestBody AdminRequestDTO adminRequestDTO) {
+        AdminResponseDTO createdAdmin = adminService.createAdmin(adminRequestDTO);
+        return new ResponseEntity<>(createdAdmin, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{adminId}")
-    public AdminModel updateAdmin(@PathVariable Long adminId, @RequestBody AdminModel adminDetails) {
-        AdminModel admin = adminRepository.findById(adminId).orElse(null);
-        if (admin != null) {
-            // Update admin details
-            admin.setName(adminDetails.getName());
-            admin.setRole(adminDetails.getRole());
-
-            // Assuming manager ID is stored in the manager object of AdminModel
-            // If it's not, adjust accordingly based on your data model
-            if (adminDetails.getManager() != null) {
-                admin.setManager(adminDetails.getManager());
-            }
-
-            admin.setUpdatedAt(new Date());
-            return adminRepository.save(admin);
-        } else {
-            return null;
-        }
+    @PutMapping("/{adminIds}")
+    public ResponseEntity<AdminResponseDTO> updateAdmin(@PathVariable Long adminIds, @RequestBody AdminRequestDTO adminRequestDTO) {
+        AdminResponseDTO updatedAdmin = adminService.updateAdmin(adminIds, adminRequestDTO);
+        return updatedAdmin != null ? ResponseEntity.ok(updatedAdmin) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{adminsId}")
-    public void deleteAdmin(@PathVariable Long adminsId) {
-        adminRepository.deleteById(adminsId);
+    public ResponseEntity<Void> deleteAdmin(@PathVariable Long adminsId) {
+        adminService.deleteAdmin(adminsId);
+        return ResponseEntity.noContent().build();
     }
 }

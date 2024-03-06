@@ -22,4 +22,8 @@ public class AdminRequestDTO {
     private Date createdAt;
 
     private Date updatedAt;
+
+    public ManagerModel getManagerId() {
+        return null;
+    }
 }

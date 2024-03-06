@@ -1,4 +1,4 @@
-package org.pgs.posback.dto.Invoice;
+package org.pgs.posback.DTO.Invoice;
 
 import lombok.Data;
 import org.pgs.posback.model.Customer;

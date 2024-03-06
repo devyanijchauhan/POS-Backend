@@ -11,7 +11,7 @@ public class CustomerUpdateDTO {
 
     private String name;
 
-    private int contactNumber;
+    private Long contactNumber;
 
     private int loyaltyPoints;
 
@@ -20,6 +20,8 @@ public class CustomerUpdateDTO {
     private String email;
 
     private String address;
+
+    private Boolean gender;
 
     private Date createdAt;
 

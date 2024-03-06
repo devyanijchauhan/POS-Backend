@@ -4,8 +4,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
-import org.pgs.posback.dto.Customer.CustomerRequestDTO;
-import org.pgs.posback.dto.Customer.CustomerResponseDTO;
+import org.pgs.posback.DTO.Customer.CustomerRequestDTO;
+import org.pgs.posback.DTO.Customer.CustomerResponseDTO;
 import org.pgs.posback.model.Customer;
 
 import java.util.List;
@@ -24,6 +24,7 @@ public interface CustomerMapper {
 //             @Mapping(target = "dateOfBirth", dateFormat = "yourDateFormat", source = "customer.dateOfBirth"),
 //            @Mapping(target = "email", source = "customer.email"),
 //            @Mapping(target = "address", source = "customer.address"),
+//            @Mapping(target = "gender", source = "customer.gender"),
 //            @Mapping(target = "createdAt", dateFormat = "yourDateFormat", source = "customer.createdAt"),
 //            @Mapping(target = "updatedAt", dateFormat = "yourDateFormat", source = "customer.updatedAt")
 //    })
