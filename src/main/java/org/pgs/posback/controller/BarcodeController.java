@@ -1,60 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.BarcodeModel;
-import org.pgs.posback.repository.BarcodeRepository;
-import org.pgs.posback.repository.EmployeeRepository;
+import org.pgs.posback.DTO.Barcode.BarcodeRequestDTO;
+import org.pgs.posback.DTO.Barcode.BarcodeResponseDTO;
+import org.pgs.posback.service.BarcodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/barcodes")
 public class BarcodeController {
 
-    private BarcodeRepository barcodeRepository;
+    private final BarcodeService barcodeService;
 
     @Autowired
-    public BarcodeController(BarcodeRepository barcodeRepository){
-        this.barcodeRepository=barcodeRepository;
+    public BarcodeController(BarcodeService barcodeService) {
+        this.barcodeService = barcodeService;
     }
 
     @GetMapping("/all")
-    public List<BarcodeModel> getAllBarcodes() {
-        return barcodeRepository.findAll();
+    public ResponseEntity<List<BarcodeResponseDTO>> getAllBarcodes() {
+        List<BarcodeResponseDTO> barcodes = barcodeService.getAllBarcodes();
+        return ResponseEntity.ok(barcodes);
     }
 
-    @GetMapping("/{Id}")
-    public BarcodeModel getBarcodeById(@PathVariable Long Id) {
-        return barcodeRepository.findById(Id).orElse(null);
+    @GetMapping("/{id}")
+    public ResponseEntity<BarcodeResponseDTO> getBarcodeById(@PathVariable Long id) {
+        BarcodeResponseDTO barcode = barcodeService.getBarcodeById(id);
+        return barcode != null ? ResponseEntity.ok(barcode) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public BarcodeModel createBarcode(@RequestBody BarcodeModel barcode) {
-        barcode.setCreatedAt(new Date());
-        barcode.setUpdatedAt(new Date());
-        return barcodeRepository.save(barcode);
+    public ResponseEntity<BarcodeResponseDTO> createBarcode(@RequestBody BarcodeRequestDTO barcodeRequestDTO) {
+        BarcodeResponseDTO createdBarcode = barcodeService.createBarcode(barcodeRequestDTO);
+        return new ResponseEntity<>(createdBarcode, HttpStatus.CREATED);
     }
 
     @PutMapping("/{barcodeId}")
-    public BarcodeModel updateBarcode(@PathVariable Long barcodeId, @RequestBody BarcodeModel barcodeDetails) {
-        BarcodeModel barcode = barcodeRepository.findById(barcodeId).orElse(null);
-        if (barcode != null) {
-            barcode.setProduct(barcodeDetails.getProduct());
-            barcode.setBarcodeImage(barcodeDetails.getBarcodeImage());
-            barcode.setUpdatedAt(new Date());
-            return barcodeRepository.save(barcode);
-        } else {
-            return null;
-        }
+    public ResponseEntity<BarcodeResponseDTO> updateBarcode(@PathVariable Long barcodeId, @RequestBody BarcodeRequestDTO barcodeRequestDTO) {
+        BarcodeResponseDTO updatedBarcode = barcodeService.updateBarcode(barcodeId, barcodeRequestDTO);
+        return updatedBarcode != null ? ResponseEntity.ok(updatedBarcode) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{barcodesId}")
-    public void deleteBarcode(@PathVariable Long barcodesId) {
-        BarcodeModel barcode = barcodeRepository.findById(barcodesId).orElse(null);
-        if (barcode != null) {
-            barcodeRepository.delete(barcode);
-        }
+    @DeleteMapping("/{Idb}")
+    public ResponseEntity<Void> deleteBarcode(@PathVariable Long Idb) {
+        barcodeService.deleteBarcode(Idb);
+        return ResponseEntity.noContent().build();
     }
 }
