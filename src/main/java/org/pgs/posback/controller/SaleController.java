@@ -1,68 +1,61 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.SaleModel;
-import org.pgs.posback.repository.SaleRepository;
+import org.pgs.posback.DTO.Sale.SaleRequestDTO;
+import org.pgs.posback.DTO.Sale.SaleResponseDTO;
+import org.pgs.posback.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/sales")
 public class SaleController {
 
-    private SaleRepository saleRepository;
+    private final SaleService saleService;
 
     @Autowired
-    public SaleController(SaleRepository saleRepository) {
-        this.saleRepository = saleRepository;
+    public SaleController(SaleService saleService) {
+        this.saleService = saleService;
     }
 
     @GetMapping("/all")
-    public List<SaleModel> getAllSales() {
-        return saleRepository.findAll();
+    public ResponseEntity<List<SaleResponseDTO>> getAllSales() {
+        List<SaleResponseDTO> sales = saleService.getAllSales();
+        return new ResponseEntity<>(sales, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SaleModel> getSaleById(@PathVariable("id") Long id) {
-        Optional<SaleModel> saleData = saleRepository.findById(id);
-        return saleData.map(saleModel -> new ResponseEntity<>(saleModel, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @PostMapping
-    public ResponseEntity<SaleModel> createSale(@RequestBody SaleModel saleModel) {
-        try {
-            SaleModel createdSale = saleRepository.save(saleModel);
-            return new ResponseEntity<>(createdSale, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PutMapping("/{saleid}")
-    public ResponseEntity<SaleModel> updateSale(@PathVariable("saleid") Long saleid, @RequestBody SaleModel saleModel) {
-        Optional<SaleModel> saleData = saleRepository.findById(saleid);
-
-        if (saleData.isPresent()) {
-            SaleModel updatedSale = saleData.get();
-            // Update the sale details here
-            return new ResponseEntity<>(saleRepository.save(updatedSale), HttpStatus.OK);
+    public ResponseEntity<SaleResponseDTO> getSaleById(@PathVariable Long id) {
+        SaleResponseDTO sale = saleService.getSaleById(id);
+        if (sale != null) {
+            return new ResponseEntity<>(sale, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/{ids}")
-    public ResponseEntity<HttpStatus> deleteSale(@PathVariable("ids") Long ids) {
-        try {
-            saleRepository.deleteById(ids);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @PostMapping
+    public ResponseEntity<SaleResponseDTO> createSale(@RequestBody SaleRequestDTO saleRequestDTO) {
+        SaleResponseDTO createdSale = saleService.createSale(saleRequestDTO);
+        return new ResponseEntity<>(createdSale, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{saleId}")
+    public ResponseEntity<SaleResponseDTO> updateSale(@PathVariable Long saleId, @RequestBody SaleRequestDTO saleRequestDTO) {
+        SaleResponseDTO updatedSale = saleService.updateSale(saleId, saleRequestDTO);
+        if (updatedSale != null) {
+            return new ResponseEntity<>(updatedSale, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @DeleteMapping("/{Ids}")
+    public ResponseEntity<Void> deleteSale(@PathVariable Long Ids) {
+        saleService.deleteSale(Ids);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
