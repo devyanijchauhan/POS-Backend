@@ -1,74 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.TransactionModel;
-import org.pgs.posback.repository.TransactionRepository;
+import org.pgs.posback.DTO.Transaction.TransactionRequestDTO;
+import org.pgs.posback.DTO.Transaction.TransactionResponseDTO;
+import org.pgs.posback.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
-    private TransactionRepository transactionRepository;
+
+    private final TransactionService transactionService;
 
     @Autowired
-    public TransactionController(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @GetMapping("/all")
-    public List<TransactionModel> getAllTransactions() {
-        return transactionRepository.findAll();
+    public ResponseEntity<List<TransactionResponseDTO>> getAllTransactions() {
+        List<TransactionResponseDTO> transactions = transactionService.getAllTransactions();
+        return ResponseEntity.ok(transactions);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionModel> getTransactionById(@PathVariable("id") Long id) {
-        Optional<TransactionModel> transactionData = transactionRepository.findById(id);
-        return transactionData.map(transactionModel -> new ResponseEntity<>(transactionModel, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<TransactionResponseDTO> getTransactionById(@PathVariable Long id) {
+        TransactionResponseDTO transaction = transactionService.getTransactionById(id);
+        return transaction != null ? ResponseEntity.ok(transaction) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<TransactionModel> createTransaction(@RequestBody TransactionModel transactionModel) {
-        try {
-            transactionModel.setCreatedAt(new Date());
-            transactionModel.setUpdatedAt(new Date());
-            TransactionModel createdTransaction = transactionRepository.save(transactionModel);
-            return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<TransactionResponseDTO> createTransaction(@RequestBody TransactionRequestDTO transactionRequestDTO) {
+        TransactionResponseDTO createdTransaction = transactionService.createTransaction(transactionRequestDTO);
+        return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{transactionid}")
-    public ResponseEntity<TransactionModel> updateTransaction(@PathVariable("transactionid") Long transactionid, @RequestBody TransactionModel transactionModel) {
-        Optional<TransactionModel> transactionData = transactionRepository.findById(transactionid);
-
-        if (transactionData.isPresent()) {
-            TransactionModel updatedTransaction = transactionData.get();
-            updatedTransaction.setType(transactionModel.getType());
-            updatedTransaction.setAmount(transactionModel.getAmount());
-            updatedTransaction.setDateTime(transactionModel.getDateTime());
-            updatedTransaction.setStore(transactionModel.getStore());
-            updatedTransaction.setUpdatedAt(new Date());
-            return new ResponseEntity<>(transactionRepository.save(updatedTransaction), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{transactionId}")
+    public ResponseEntity<TransactionResponseDTO> updateTransaction(@PathVariable Long transactionId, @RequestBody TransactionRequestDTO transactionRequestDTO) {
+        TransactionResponseDTO updatedTransaction = transactionService.updateTransaction(transactionId, transactionRequestDTO);
+        return updatedTransaction != null ? ResponseEntity.ok(updatedTransaction) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{idt}")
-    public ResponseEntity<HttpStatus> deleteTransaction(@PathVariable("idt") Long idt) {
-        try {
-            transactionRepository.deleteById(idt);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping("/{Idt}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long Idt) {
+        transactionService.deleteTransaction(Idt);
+        return ResponseEntity.noContent().build();
     }
 }
