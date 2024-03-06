@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponseDTO createCustomer(CustomerRequestDTO customerRequestDTO) {
 
         Customer customer= CustomerMapper.INSTANCE.CUSTOMER_REQ_DTO_TO_CUSTOMER(customerRequestDTO);
+        customer.setCreatedAt(new Date());
+        customer.setUpdatedAt(new Date());
         return CustomerMapper.INSTANCE.CUSTOMER_TO_CUSTOMER_RES_DTO(customerRepository.save(customer));
 
     }
