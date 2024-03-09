@@ -1,70 +1,53 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.CategoryModel;
-import org.pgs.posback.repository.CategoryRepository;
+import org.pgs.posback.DTO.Category.CategoryRequestDTO;
+import org.pgs.posback.DTO.Category.CategoryResponseDTO;
+import org.pgs.posback.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
-    private CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     @Autowired
-    public CategoryController(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping("/all")
-    public List<CategoryModel> getAllCategories() {
-        return categoryRepository.findAll();
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
+        List<CategoryResponseDTO> categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryModel> getCategoryById(@PathVariable("id") Long id) {
-        Optional<CategoryModel> categoryData = categoryRepository.findById(id);
-        return categoryData.map(categoryModel -> new ResponseEntity<>(categoryModel, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+        CategoryResponseDTO category = categoryService.getCategoryById(id);
+        return category != null ? ResponseEntity.ok(category) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<CategoryModel> createCategory(@RequestBody CategoryModel categoryModel) {
-        try {
-            CategoryModel createdCategory = categoryRepository.save(categoryModel);
-            return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+        CategoryResponseDTO createdCategory = categoryService.createCategory(categoryRequestDTO);
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{categoryid}")
-    public ResponseEntity<CategoryModel> updateCategory(@PathVariable("categoryid") Long categoryid, @RequestBody CategoryModel categoryModel) {
-        Optional<CategoryModel> categoryData = categoryRepository.findById(categoryid);
-
-        if (categoryData.isPresent()) {
-            CategoryModel updatedCategory = categoryData.get();
-            updatedCategory.setName(categoryModel.getName());
-            updatedCategory.setCreatedAt(categoryModel.getCreatedAt());
-            updatedCategory.setUpdatedAt(categoryModel.getUpdatedAt());
-            return new ResponseEntity<>(categoryRepository.save(updatedCategory), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryRequestDTO categoryRequestDTO) {
+        CategoryResponseDTO updatedCategory = categoryService.updateCategory(categoryId, categoryRequestDTO);
+        return updatedCategory != null ? ResponseEntity.ok(updatedCategory) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{idc}")
-    public ResponseEntity<HttpStatus> deleteCategory(@PathVariable("idc") Long idc) {
-        try {
-            categoryRepository.deleteById(idc);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @DeleteMapping("/{cId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long cId) {
+        categoryService.deleteCategory(cId);
+        return ResponseEntity.noContent().build();
     }
 }

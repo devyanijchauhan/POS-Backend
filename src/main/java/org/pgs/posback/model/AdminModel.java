@@ -25,7 +25,7 @@ public class AdminModel {
     private String name;
 
     @Column(name = "role")
-    private String role;
+    private String role = "admin";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", referencedColumnName = "manager_id")

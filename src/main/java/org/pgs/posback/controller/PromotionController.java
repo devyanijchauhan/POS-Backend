@@ -1,63 +1,54 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.PromotionModel;
-import org.pgs.posback.repository.AdminRepository;
-import org.pgs.posback.repository.PromotionRepository;
+import org.pgs.posback.DTO.Promotion.PromotionRequestDTO;
+import org.pgs.posback.DTO.Promotion.PromotionResponseDTO;
+import org.pgs.posback.service.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/promotions")
 public class PromotionController {
-    private PromotionRepository promotionRepository;
+
+    private final PromotionService promotionService;
 
     @Autowired
-    public PromotionController(PromotionRepository promotionRepository){
-        this.promotionRepository=promotionRepository;
+    public PromotionController(PromotionService promotionService) {
+        this.promotionService = promotionService;
     }
 
-    @GetMapping("all")
-    public List<PromotionModel> getAllPromotions() {
-        return promotionRepository.findAll();
+    @GetMapping("/all")
+    public ResponseEntity<List<PromotionResponseDTO>> getAllPromotions() {
+        return new ResponseEntity<>(promotionService.getAllPromotions(),HttpStatus.OK);
+//        List<PromotionResponseDTO> promotions = promotionService.getAllPromotions();
+//        return ResponseEntity.ok(promotions);
     }
 
     @GetMapping("/{id}")
-    public PromotionModel getPromotionById(@PathVariable Long id) {
-        return promotionRepository.findById(id).orElse(null);
+    public ResponseEntity<PromotionResponseDTO> getPromotionById(@PathVariable Long id) {
+        PromotionResponseDTO promotion = promotionService.getPromotionById(id);
+        return promotion != null ? ResponseEntity.ok(promotion) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public PromotionModel createPromotion(@RequestBody PromotionModel promotion) {
-        promotion.setCreatedAt(new Date());
-        promotion.setUpdatedAt(new Date());
-        return promotionRepository.save(promotion);
+    public ResponseEntity<PromotionResponseDTO> createPromotion(@RequestBody PromotionRequestDTO promotionRequestDTO) {
+        PromotionResponseDTO createdPromotion = promotionService.createPromotion(promotionRequestDTO);
+        return new ResponseEntity<>(createdPromotion, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{promotionid}")
-    public PromotionModel updatePromotion(@PathVariable Long promotionid, @RequestBody PromotionModel promotionDetails) {
-        PromotionModel promotion = promotionRepository.findById(promotionid).orElse(null);
-        if (promotion != null) {
-            promotion.setName(promotionDetails.getName());
-            promotion.setStartDate(promotionDetails.getStartDate());
-            promotion.setEndDate(promotionDetails.getEndDate());
-            promotion.setDiscountPercentage(promotionDetails.getDiscountPercentage());
-            promotion.setScheduledAmount(promotionDetails.getScheduledAmount());
-            promotion.setProductCombination(promotionDetails.getProductCombination());
-            promotion.setUpdatedAt(new Date());
-            return promotionRepository.save(promotion);
-        } else {
-            return null;
-        }
+    @PutMapping("/{promotionId}")
+    public ResponseEntity<PromotionResponseDTO> updatePromotion(@PathVariable Long promotionId, @RequestBody PromotionRequestDTO promotionRequestDTO) {
+        PromotionResponseDTO updatedPromotion = promotionService.updatePromotion(promotionId, promotionRequestDTO);
+        return updatedPromotion != null ? ResponseEntity.ok(updatedPromotion) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{idp}")
-    public void deletePromotion(@PathVariable Long idp) {
-        PromotionModel promotion = promotionRepository.findById(idp).orElse(null);
-        if (promotion != null) {
-            promotionRepository.delete(promotion);
-        }
+    @DeleteMapping("/{promotionId}")
+    public ResponseEntity<Void> deletePromotion(@PathVariable Long promotionId) {
+        promotionService.deletePromotion(promotionId);
+        return ResponseEntity.noContent().build();
     }
 }

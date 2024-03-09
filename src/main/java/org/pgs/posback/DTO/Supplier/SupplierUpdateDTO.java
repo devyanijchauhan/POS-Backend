@@ -11,7 +11,7 @@ public class SupplierUpdateDTO {
 
     private String name;
 
-    private String contactInformation;
+    private Long contactNumber;
 
     private Date createdAt;
 

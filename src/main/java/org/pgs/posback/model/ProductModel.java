@@ -35,7 +35,7 @@ public class ProductModel {
     @Column(name = "reorder_level")
     private Integer reorderLevel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Eagerly fetch associated category
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private CategoryModel category;
 
@@ -44,7 +44,7 @@ public class ProductModel {
     @Column(name = "barcode", columnDefinition = "BYTEA")
     private byte[] barcode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) // Eagerly fetch associated supplier
     @JoinColumn(name = "supplier_id", referencedColumnName = "supplier_id")
     private SupplierModel supplier;
 

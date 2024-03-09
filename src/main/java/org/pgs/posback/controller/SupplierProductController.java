@@ -1,9 +1,11 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.SupplierProductModel;
-import org.pgs.posback.repository.AdminRepository;
-import org.pgs.posback.repository.SupplierProductRepository;
+import org.pgs.posback.DTO.SupplierProduct.SupplierProductRequestDTO;
+import org.pgs.posback.DTO.SupplierProduct.SupplierProductResponseDTO;
+import org.pgs.posback.service.SupplierProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,43 +14,40 @@ import java.util.List;
 @RequestMapping("/supplier-products")
 public class SupplierProductController {
 
-    private SupplierProductRepository supplierProductRepository;
+    private final SupplierProductService supplierProductService;
 
     @Autowired
-    public SupplierProductController(SupplierProductRepository supplierProductRepository){
-        this.supplierProductRepository=supplierProductRepository;
+    public SupplierProductController(SupplierProductService supplierProductService) {
+        this.supplierProductService = supplierProductService;
     }
 
     @GetMapping("/all")
-    public List<SupplierProductModel> getAllSupplierProducts() {
-        return supplierProductRepository.findAll();
+    public ResponseEntity<List<SupplierProductResponseDTO>> getAllSupplierProducts() {
+        List<SupplierProductResponseDTO> supplierProducts = supplierProductService.getAllSupplierProducts();
+        return ResponseEntity.ok(supplierProducts);
     }
 
     @GetMapping("/{id}")
-    public SupplierProductModel getSupplierProductById(@PathVariable Long id) {
-        return supplierProductRepository.findById(id).orElse(null);
+    public ResponseEntity<SupplierProductResponseDTO> getSupplierProductById(@PathVariable Long id) {
+        SupplierProductResponseDTO supplierProduct = supplierProductService.getSupplierProductById(id);
+        return supplierProduct != null ? ResponseEntity.ok(supplierProduct) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public SupplierProductModel createSupplierProduct(@RequestBody SupplierProductModel supplierProduct) {
-        return supplierProductRepository.save(supplierProduct);
+    public ResponseEntity<SupplierProductResponseDTO> createSupplierProduct(@RequestBody SupplierProductRequestDTO supplierProductRequestDTO) {
+        SupplierProductResponseDTO createdSupplierProduct = supplierProductService.createSupplierProduct(supplierProductRequestDTO);
+        return new ResponseEntity<>(createdSupplierProduct, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{spid}")
-    public SupplierProductModel updateSupplierProduct(@PathVariable Long spid, @RequestBody SupplierProductModel supplierProductDetails) {
-        SupplierProductModel supplierProduct = supplierProductRepository.findById(spid).orElse(null);
-        if (supplierProduct != null) {
-            supplierProduct.setSupplier(supplierProductDetails.getSupplier());
-            supplierProduct.setProduct(supplierProductDetails.getProduct());
-            supplierProduct.setUnitPrice(supplierProductDetails.getUnitPrice());
-            return supplierProductRepository.save(supplierProduct);
-        } else {
-            return null;
-        }
+    @PutMapping("/{idd}")
+    public ResponseEntity<SupplierProductResponseDTO> updateSupplierProduct(@PathVariable Long idd, @RequestBody SupplierProductRequestDTO supplierProductRequestDTO) {
+        SupplierProductResponseDTO updatedSupplierProduct = supplierProductService.updateSupplierProduct(idd, supplierProductRequestDTO);
+        return updatedSupplierProduct != null ? ResponseEntity.ok(updatedSupplierProduct) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{idsp}")
-    public void deleteSupplierProduct(@PathVariable Long idsp) {
-        supplierProductRepository.deleteById(idsp);
+    @DeleteMapping("/{sid}")
+    public ResponseEntity<Void> deleteSupplierProduct(@PathVariable Long sid) {
+        supplierProductService.deleteSupplierProduct(sid);
+        return ResponseEntity.noContent().build();
     }
 }

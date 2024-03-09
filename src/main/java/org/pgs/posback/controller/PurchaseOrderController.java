@@ -1,62 +1,61 @@
 package org.pgs.posback.controller;
 
-import org.pgs.posback.model.PurchaseOrderModel;
-import org.pgs.posback.repository.AdminRepository;
-import org.pgs.posback.repository.PurchaseOrderRepository;
+import org.pgs.posback.DTO.PurchaseOrder.PurchaseOrderRequestDTO;
+import org.pgs.posback.DTO.PurchaseOrder.PurchaseOrderResponseDTO;
+import org.pgs.posback.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/purchase-orders")
 public class PurchaseOrderController {
 
-    private PurchaseOrderRepository purchaseOrderRepository;
+    private final PurchaseOrderService purchaseOrderService;
 
     @Autowired
-    public PurchaseOrderController(PurchaseOrderRepository purchaseOrderRepository){
-        this.purchaseOrderRepository=purchaseOrderRepository;
+    public PurchaseOrderController(PurchaseOrderService purchaseOrderService) {
+        this.purchaseOrderService = purchaseOrderService;
     }
 
     @GetMapping("/all")
-    public List<PurchaseOrderModel> getAllPurchaseOrders() {
-        return purchaseOrderRepository.findAll();
+    public ResponseEntity<List<PurchaseOrderResponseDTO>> getAllPurchaseOrders() {
+        List<PurchaseOrderResponseDTO> purchaseOrders = purchaseOrderService.getAllPurchaseOrders();
+        return new ResponseEntity<>(purchaseOrders, HttpStatus.OK);
     }
 
-    @GetMapping("/{Id}")
-    public PurchaseOrderModel getPurchaseOrderById(@PathVariable Long Id) {
-        return purchaseOrderRepository.findById(Id).orElse(null);
+    @GetMapping("/{id}")
+    public ResponseEntity<PurchaseOrderResponseDTO> getPurchaseOrderById(@PathVariable Long id) {
+        PurchaseOrderResponseDTO purchaseOrder = purchaseOrderService.getPurchaseOrderById(id);
+        if (purchaseOrder != null) {
+            return new ResponseEntity<>(purchaseOrder, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
-    public PurchaseOrderModel createPurchaseOrder(@RequestBody PurchaseOrderModel purchaseOrder) {
-        purchaseOrder.setCreatedAt(new Date());
-        purchaseOrder.setUpdatedAt(new Date());
-        return purchaseOrderRepository.save(purchaseOrder);
+    public ResponseEntity<PurchaseOrderResponseDTO> createPurchaseOrder(@RequestBody PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
+        PurchaseOrderResponseDTO createdPurchaseOrder = purchaseOrderService.createPurchaseOrder(purchaseOrderRequestDTO);
+        return new ResponseEntity<>(createdPurchaseOrder, HttpStatus.CREATED);
     }
 
     @PutMapping("/{orderId}")
-    public PurchaseOrderModel updatePurchaseOrder(@PathVariable Long orderId, @RequestBody PurchaseOrderModel purchaseOrderDetails) {
-        PurchaseOrderModel purchaseOrder = purchaseOrderRepository.findById(orderId).orElse(null);
-        if (purchaseOrder != null) {
-            purchaseOrder.setDate(purchaseOrderDetails.getDate());
-            purchaseOrder.setSupplier(purchaseOrderDetails.getSupplier());
-            purchaseOrder.setStatus(purchaseOrderDetails.getStatus());
-            purchaseOrder.setStore(purchaseOrderDetails.getStore());
-            purchaseOrder.setUpdatedAt(new Date());
-            return purchaseOrderRepository.save(purchaseOrder);
+    public ResponseEntity<PurchaseOrderResponseDTO> updatePurchaseOrder(@PathVariable Long orderId, @RequestBody PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
+        PurchaseOrderResponseDTO updatedPurchaseOrder = purchaseOrderService.updatePurchaseOrder(orderId, purchaseOrderRequestDTO);
+        if (updatedPurchaseOrder != null) {
+            return new ResponseEntity<>(updatedPurchaseOrder, HttpStatus.OK);
         } else {
-            return null;
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/{Ido}")
-    public void deletePurchaseOrder(@PathVariable Long Ido) {
-        PurchaseOrderModel purchaseOrder = purchaseOrderRepository.findById(Ido).orElse(null);
-        if (purchaseOrder != null) {
-            purchaseOrderRepository.delete(purchaseOrder);
-        }
+    @DeleteMapping("/{purchaseorderId}")
+    public ResponseEntity<HttpStatus> deletePurchaseOrder(@PathVariable Long purchaseorderId) {
+        purchaseOrderService.deletePurchaseOrder(purchaseorderId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

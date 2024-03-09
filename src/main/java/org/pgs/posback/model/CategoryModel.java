@@ -21,7 +21,7 @@ public class CategoryModel {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)// Eagerly fetch associated products
     private List<ProductModel> products;
 
     @Column(name = "created_at")

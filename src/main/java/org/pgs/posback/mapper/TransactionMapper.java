@@ -8,7 +8,7 @@ import org.pgs.posback.DTO.Transaction.TransactionResponseDTO;
 import org.pgs.posback.model.TransactionModel;
 
 @Mapper
-public interface TransactionMapper {
+public interface  TransactionMapper {
 
     TransactionMapper INSTANCE = Mappers.getMapper(TransactionMapper.class);
 

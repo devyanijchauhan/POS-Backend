@@ -11,7 +11,15 @@ import org.pgs.posback.model.SupplierModel;
 public interface SupplierMapper {
     SupplierMapper INSTANCE = Mappers.getMapper(SupplierMapper.class);
 
+
+    @Mapping(target = "id", source = "supplierModel.id")
+    @Mapping(target = "name", source = "supplierModel.name")
+    @Mapping(target = "contactNumber", source = "supplierModel.contactNumber")
     SupplierResponseDTO supplierModelToSupplierResponseDTO(SupplierModel supplierModel);
 
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     SupplierModel supplierRequestDTOToSupplierModel(SupplierRequestDTO supplierRequestDTO);
 }

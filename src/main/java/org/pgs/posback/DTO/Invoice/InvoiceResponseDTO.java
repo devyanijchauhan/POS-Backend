@@ -16,6 +16,8 @@ public class InvoiceResponseDTO {
 
     private Date dateTime;
 
+    private BigDecimal invoicePrice;
+
     private BigDecimal totalAmount;
 
     private BigDecimal taxAmount;

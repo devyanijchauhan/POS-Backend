@@ -102,9 +102,7 @@ public class InvoiceModel {
         return invoicePrice;
     }
 
-    public void setInvoicePrice(BigDecimal invoicePrice) {
-        this.invoicePrice = invoicePrice;
-    }
+    public void setInvoicePrice(BigDecimal invoicePrice) {this.invoicePrice = invoicePrice;}
 
     public BigDecimal getTotalAmount() {
         return totalAmount;
